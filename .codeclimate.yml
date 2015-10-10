@@ -12,3 +12,4 @@ ratings:
 
 exclude_paths:
 - "*_test.go"
+- "Godeps"
