@@ -42,6 +42,7 @@ Create new client and return pointer to it
 Check if passed key and blog values are correct, if not return error
 
 ## Tests
+Required go in version >=1.4
 
 ```
 $ go test ./...
