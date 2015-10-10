@@ -15,7 +15,7 @@ const (
 	APIAddress  = "rest.akismet.com"
 	APIProtocol = "https"
 	APIVersion  = "1.1"
-	DateFormat  = time.RFC3339 //"2006-01-02 15:04:46"
+	DateFormat  = time.RFC3339
 )
 
 // Client is Akismet client struct
