@@ -4,14 +4,14 @@ import (
 	"os"
 	"testing"
 
+	"github.com/jarcoal/httpmock"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestMain(m *testing.M) {
-	apiEndpoints = map[string]apiEndpoint{
-		"withOutKey": apiEndpoint{"without-key", "GET", false},
-		"withKey":    apiEndpoint{"with-key", "GET", true},
-	}
+	apiEndpoints["withOutKey"] = apiEndpoint{"without-key", "GET", false}
+	apiEndpoints["withKey"] = apiEndpoint{"with-key", "GET", true}
+
 	os.Exit(m.Run())
 }
 
@@ -39,4 +39,34 @@ func TestGetEndpointURLWithKey(t *testing.T) {
 	address, err := client.getEndpointURL("withKey")
 	assert.Nil(t, err)
 	assert.Equal(t, "https://test_api_key.rest.akismet.com/1.1/with-key", address)
+}
+
+func TestVeryfiClientNotValid(t *testing.T) {
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+	httpmock.RegisterResponder("GET", "https://rest.akismet.com/1.1/verify-key?blog=test_site&key=test_api_key", httpmock.NewStringResponder(200, "invalid"))
+
+	client := NewClient("test_api_key", "test_site")
+	err := client.VeryfiClient()
+	assert.Error(t, err)
+}
+
+func TestVeryfiClientInternalError(t *testing.T) {
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+	httpmock.RegisterResponder("GET", "https://rest.akismet.com/1.1/verify-key?blog=test_site&key=test_api_key", httpmock.NewStringResponder(500, ""))
+
+	client := NewClient("test_api_key", "test_site")
+	err := client.VeryfiClient()
+	assert.Error(t, err)
+}
+
+func TestVeryfiClient(t *testing.T) {
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+	httpmock.RegisterResponder("GET", "https://rest.akismet.com/1.1/verify-key?blog=test_site&key=test_api_key", httpmock.NewStringResponder(200, `valid`))
+
+	client := NewClient("test_api_key", "test_site")
+	err := client.VeryfiClient()
+	assert.Nil(t, err)
 }
