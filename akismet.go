@@ -12,10 +12,11 @@ import (
 
 // Basic informations about Akismet API
 const (
-	APIAddress  = "rest.akismet.com"
-	APIProtocol = "https"
-	APIVersion  = "1.1"
-	DateFormat  = time.RFC3339
+	APIAddress              = "rest.akismet.com"
+	APIProtocol             = "https"
+	APIVersion              = "1.1"
+	DateFormat              = time.RFC3339
+	SubmitResponseContentOK = "Thanks for making the web a better place."
 )
 
 // Client is Akismet client struct
@@ -96,38 +97,16 @@ func (c *Client) VeryfiClient() error {
 
 // IsSpam is a method which check if passed Options struct is spam or not
 func (c *Client) IsSpam(o *Options) (bool, error) {
-	v, err := o.parse()
+	r, err := c.makeRequest(o, "commentCheck")
 	if err != nil {
 		return false, err
 	}
 
-	v.Add("blog", c.site)
-	endpointURL, err := c.getEndpointURL("commentCheck")
-	if err != nil {
-		return false, err
-	}
-
-	address, err := url.Parse(endpointURL)
-	if err != nil {
-		return false, err
-	}
-
-	address.RawQuery = v.Encode()
-	res, err := c.httpClient.Get(address.String())
-	if err != nil {
-		return false, err
-	}
-
-	if res.StatusCode != 200 {
-		return false, errors.New("something went wrong, HTTP status code is not equals 200")
-	}
-
-	r, _ := getResponseBodyAsString(res)
 	switch r {
 	case "true":
 		return true, nil
 	case "invalid":
-		return false, errors.New(res.Header.Get("X-Akismet-Debug-Help"))
+		return false, errors.New("bad request")
 	}
 
 	return false, nil
@@ -135,35 +114,13 @@ func (c *Client) IsSpam(o *Options) (bool, error) {
 
 // SubmitSpam is method which send to Akismet API request about found spam
 func (c *Client) SubmitSpam(o *Options) error {
-	v, err := o.parse()
+	r, err := c.makeRequest(o, "submitSpam")
 	if err != nil {
 		return err
 	}
 
-	v.Add("blog", c.site)
-	endpointURL, err := c.getEndpointURL("submitSpam")
-	if err != nil {
-		return err
-	}
-
-	address, err := url.Parse(endpointURL)
-	if err != nil {
-		return err
-	}
-
-	address.RawQuery = v.Encode()
-	res, err := c.httpClient.Get(address.String())
-	if err != nil {
-		return err
-	}
-
-	if res.StatusCode != 200 {
-		return errors.New("something went wrong, HTTP status code is not equals 200")
-	}
-
-	r, _ := getResponseBodyAsString(res)
-	if r != "Thanks for making the web a better place." {
-		return errors.New("something went wrong")
+	if r != SubmitResponseContentOK {
+		return internalError()
 	}
 
 	return nil
@@ -171,38 +128,46 @@ func (c *Client) SubmitSpam(o *Options) error {
 
 // SubmitHam is method which send to Akismet API request about found ham
 func (c *Client) SubmitHam(o *Options) error {
-	v, err := o.parse()
+	r, err := c.makeRequest(o, "submitHam")
 	if err != nil {
 		return err
 	}
 
-	v.Add("blog", c.site)
-	endpointURL, err := c.getEndpointURL("submitHam")
+	if r != SubmitResponseContentOK {
+		return internalError()
+	}
+
+	return nil
+}
+
+func (c *Client) makeRequest(o *Options, endpointName string) (string, error) {
+	v, err := o.parse()
 	if err != nil {
-		return err
+		return "", err
+	}
+
+	v.Add("blog", c.site)
+	endpointURL, err := c.getEndpointURL(endpointName)
+	if err != nil {
+		return "", err
 	}
 
 	address, err := url.Parse(endpointURL)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	address.RawQuery = v.Encode()
 	res, err := c.httpClient.Get(address.String())
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	if res.StatusCode != 200 {
-		return errors.New("something went wrong, HTTP status code is not equals 200")
+	if res.StatusCode != http.StatusOK {
+		return "", errors.New("something went wrong, HTTP status code is not equals 200")
 	}
 
-	r, _ := getResponseBodyAsString(res)
-	if r != "Thanks for making the web a better place." {
-		return errors.New("something went wrong")
-	}
-
-	return nil
+	return getResponseBodyAsString(res)
 }
 
 func (c *Client) getEndpointURL(name string) (string, error) {
@@ -313,4 +278,8 @@ func (o *Options) parse() (*url.Values, error) {
 	}
 
 	return &v, nil
+}
+
+func internalError() error {
+	return errors.New("internal error")
 }
