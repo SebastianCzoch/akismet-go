@@ -120,7 +120,7 @@ func (c *Client) SubmitSpam(o *Options) error {
 	}
 
 	if r != SubmitResponseContentOK {
-		return InternalError()
+		return internalError()
 	}
 
 	return nil
@@ -134,7 +134,7 @@ func (c *Client) SubmitHam(o *Options) error {
 	}
 
 	if r != SubmitResponseContentOK {
-		return InternalError()
+		return internalError()
 	}
 
 	return nil
@@ -280,6 +280,6 @@ func (o *Options) parse() (*url.Values, error) {
 	return &v, nil
 }
 
-func InternalError() error {
+func internalError() error {
 	return errors.New("internal error")
 }
