@@ -77,6 +77,11 @@ Check if passed key and blog values are correct, if not return error
 ### (c *Client) IsSpam(o *Options) (bool, error)
 Check if passed Options struct is a spam or not
 
+### (c *Client) SubmitSpam(o *Options) error
+This call is for submitting comments that weren't marked as spam but should have been.
+
+### (c *Client) SubmitHam(o *Options) error
+This call is intended for the submission of false positives - items that were incorrectly classified as spam by Akismet.
 
 ### Options struct
 ```
