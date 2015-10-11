@@ -53,6 +53,7 @@ var apiEndpoints = map[string]apiEndpoint{
 	"verifyKey":    apiEndpoint{"verify-key", "GET", false},
 	"commentCheck": apiEndpoint{"comment-check", "POST", true},
 	"submitSpam":   apiEndpoint{"submit-spam", "POST", true},
+	"submitHam":    apiEndpoint{"submit-ham", "POST", true},
 }
 
 // NewClient is function which create new Akismet client
@@ -141,6 +142,42 @@ func (c *Client) SubmitSpam(o *Options) error {
 
 	v.Add("blog", c.site)
 	endpointURL, err := c.getEndpointURL("submitSpam")
+	if err != nil {
+		return err
+	}
+
+	address, err := url.Parse(endpointURL)
+	if err != nil {
+		return err
+	}
+
+	address.RawQuery = v.Encode()
+	res, err := c.httpClient.Get(address.String())
+	if err != nil {
+		return err
+	}
+
+	if res.StatusCode != 200 {
+		return errors.New("something went wrong, HTTP status code is not equals 200")
+	}
+
+	r, _ := getResponseBodyAsString(res)
+	if r != "Thanks for making the web a better place." {
+		return errors.New("something went wrong")
+	}
+
+	return nil
+}
+
+// SubmitHam is method which send to Akismet API request about found ham
+func (c *Client) SubmitHam(o *Options) error {
+	v, err := o.parse()
+	if err != nil {
+		return err
+	}
+
+	v.Add("blog", c.site)
+	endpointURL, err := c.getEndpointURL("submitHam")
 	if err != nil {
 		return err
 	}

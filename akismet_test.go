@@ -274,3 +274,47 @@ func TestSpamSpamInvalid(t *testing.T) {
 	err := client.SubmitSpam(options)
 	assert.Error(t, err)
 }
+
+func TestSubmitHamMissingRequiredOptions(t *testing.T) {
+	client := NewClient("test_api_key", "test_site")
+	options := &Options{}
+	err := client.SubmitHam(options)
+	assert.EqualError(t, err, "filed UserIP can not be empty, it is required")
+
+	options.UserIP = "TestIP"
+	err = client.SubmitHam(options)
+	assert.EqualError(t, err, "filed UserAgent can not be empty, it is required")
+}
+
+func TestSubmitHamInternal(t *testing.T) {
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+	httpmock.RegisterResponder("GET", "https://test_api_key.rest.akismet.com/1.1/submit-ham?blog=test_site&user_agent=TestUserAgent&user_ip=127.0.0.1", httpmock.NewStringResponder(500, ""))
+
+	client := NewClient("test_api_key", "test_site")
+	options := &Options{UserIP: "127.0.0.1", UserAgent: "TestUserAgent"}
+	err := client.SubmitHam(options)
+	assert.Error(t, err)
+}
+
+func TestSubmitHamTrue(t *testing.T) {
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+	httpmock.RegisterResponder("GET", "https://test_api_key.rest.akismet.com/1.1/submit-ham?blog=test_site&user_agent=TestUserAgent&user_ip=127.0.0.1", httpmock.NewStringResponder(200, "Thanks for making the web a better place."))
+
+	client := NewClient("test_api_key", "test_site")
+	options := &Options{UserIP: "127.0.0.1", UserAgent: "TestUserAgent"}
+	err := client.SubmitHam(options)
+	assert.Nil(t, err)
+}
+
+func TestSpamHamInvalid(t *testing.T) {
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+	httpmock.RegisterResponder("GET", "https://test_api_key.rest.akismet.com/1.1/submit-ham?blog=test_site&user_agent=TestUserAgent&user_ip=127.0.0.1", httpmock.NewStringResponder(200, "invalid"))
+
+	client := NewClient("test_api_key", "test_site")
+	options := &Options{UserIP: "127.0.0.1", UserAgent: "TestUserAgent"}
+	err := client.SubmitHam(options)
+	assert.Error(t, err)
+}
