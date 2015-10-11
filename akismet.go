@@ -12,10 +12,11 @@ import (
 
 // Basic informations about Akismet API
 const (
-	APIAddress  = "rest.akismet.com"
-	APIProtocol = "https"
-	APIVersion  = "1.1"
-	DateFormat  = time.RFC3339
+	APIAddress              = "rest.akismet.com"
+	APIProtocol             = "https"
+	APIVersion              = "1.1"
+	DateFormat              = time.RFC3339
+	SubmitResponseContentOK = "Thanks for making the web a better place."
 )
 
 // Client is Akismet client struct
@@ -118,8 +119,8 @@ func (c *Client) SubmitSpam(o *Options) error {
 		return err
 	}
 
-	if r != "Thanks for making the web a better place." {
-		return errors.New("something went wrong")
+	if r != SubmitResponseContentOK {
+		return InternalError()
 	}
 
 	return nil
@@ -132,8 +133,8 @@ func (c *Client) SubmitHam(o *Options) error {
 		return err
 	}
 
-	if r != "Thanks for making the web a better place." {
-		return errors.New("something went wrong")
+	if r != SubmitResponseContentOK {
+		return InternalError()
 	}
 
 	return nil
@@ -277,4 +278,8 @@ func (o *Options) parse() (*url.Values, error) {
 	}
 
 	return &v, nil
+}
+
+func InternalError() error {
+	return errors.New("internal error")
 }
