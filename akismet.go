@@ -96,7 +96,7 @@ func (c *Client) VeryfiClient() error {
 }
 
 // IsSpam is a method which check if passed Options struct is spam or not
-func (c *Client) IsSpam(o *Options) (bool, error) {
+func (c *Client) IsSpam(o Options) (bool, error) {
 	r, err := c.makeRequest(o, "commentCheck")
 	if err != nil {
 		return false, err
@@ -113,7 +113,7 @@ func (c *Client) IsSpam(o *Options) (bool, error) {
 }
 
 // SubmitSpam is method which send to Akismet API request about found spam
-func (c *Client) SubmitSpam(o *Options) error {
+func (c *Client) SubmitSpam(o Options) error {
 	r, err := c.makeRequest(o, "submitSpam")
 	if err != nil {
 		return err
@@ -127,7 +127,7 @@ func (c *Client) SubmitSpam(o *Options) error {
 }
 
 // SubmitHam is method which send to Akismet API request about found ham
-func (c *Client) SubmitHam(o *Options) error {
+func (c *Client) SubmitHam(o Options) error {
 	r, err := c.makeRequest(o, "submitHam")
 	if err != nil {
 		return err
@@ -140,7 +140,7 @@ func (c *Client) SubmitHam(o *Options) error {
 	return nil
 }
 
-func (c *Client) makeRequest(o *Options, endpointName string) (string, error) {
+func (c *Client) makeRequest(o Options, endpointName string) (string, error) {
 	v, err := o.parse()
 	if err != nil {
 		return "", err

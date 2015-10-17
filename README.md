@@ -37,7 +37,7 @@ func main() {
 		fmt.Println("Client can't be verified, ", err)
 	}
 
-	options := &akismet.Options{
+	options := akismet.Options{
 		UserIP: "127.0.0.1",
 		UserAgent: "Test-Agent",
 		Content: "It's a spam?",
@@ -74,13 +74,13 @@ Create new client and return pointer to it
 ### (c *Client) VeryfiClient() (error)
 Check if passed key and blog values are correct, if not return error
 
-### (c *Client) IsSpam(o *Options) (bool, error)
+### (c *Client) IsSpam(o Options) (bool, error)
 Check if passed Options struct is a spam or not
 
-### (c *Client) SubmitSpam(o *Options) error
+### (c *Client) SubmitSpam(o Options) error
 This call is for submitting comments that weren't marked as spam but should have been.
 
-### (c *Client) SubmitHam(o *Options) error
+### (c *Client) SubmitHam(o Options) error
 This call is intended for the submission of false positives - items that were incorrectly classified as spam by Akismet.
 
 ### Options struct
