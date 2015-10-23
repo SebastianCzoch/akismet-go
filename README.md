@@ -1,4 +1,5 @@
-# akismet-go [![Build Status](https://travis-ci.org/SebastianCzoch/akismet-go.svg?branch=master)](https://travis-ci.org/SebastianCzoch/akismet-go) [![Code Climate](https://codeclimate.com/github/SebastianCzoch/akismet-go/badges/gpa.svg)](https://codeclimate.com/github/SebastianCzoch/akismet-go) [![GoDoc](https://godoc.org/github.com/SebastianCzoch/akismet-go?status.svg)](https://godoc.org/github.com/SebastianCzoch/akismet-go)  [![License](https://img.shields.io/badge/licence-GNU%20v2-green.svg)](./LICENSE)
+# akismet-go
+[![Build Status](https://travis-ci.org/SebastianCzoch/akismet-go.svg?branch=master)](https://travis-ci.org/SebastianCzoch/akismet-go) [![Coverage Status](https://coveralls.io/repos/SebastianCzoch/akismet-go/badge.svg?branch=master&service=github)](https://coveralls.io/github/SebastianCzoch/akismet-go?branch=master) [![Code Climate](https://codeclimate.com/github/SebastianCzoch/akismet-go/badges/gpa.svg)](https://codeclimate.com/github/SebastianCzoch/akismet-go) [![GoDoc](https://godoc.org/github.com/SebastianCzoch/akismet-go?status.svg)](https://godoc.org/github.com/SebastianCzoch/akismet-go)  [![License](https://img.shields.io/badge/licence-GNU%20v2-green.svg)](./LICENSE)
 
 
 
