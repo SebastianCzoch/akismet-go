@@ -171,6 +171,25 @@ func TestParseOptions(t *testing.T) {
 	}
 	r, err = options.parse()
 	assert.Error(t, err)
+
+	options = Options{
+		UserIP:      "127.0.0.1",
+		UserAgent:   "TestUserAgent",
+		Referrer:    "",
+		Permalink:   "",
+		Author:      "",
+		AuthorEmail: "",
+		AuthorURL:   "",
+		Content:     "",
+		Created:     "2012-11-01T22:08:41+00:00",
+		Modified:    "2015-01-01 00:00:00",
+		Lang:        "",
+		Charset:     "",
+		UserRole:    "",
+		IsTest:      "",
+	}
+	r, err = options.parse()
+	assert.Error(t, err)
 }
 
 func TestIsSpamMissingRequiredOptions(t *testing.T) {
@@ -316,5 +335,27 @@ func TestSpamHamInvalid(t *testing.T) {
 	client := NewClient("test_api_key", "test_site")
 	options := Options{UserIP: "127.0.0.1", UserAgent: "TestUserAgent"}
 	err := client.SubmitHam(options)
+	assert.Error(t, err)
+}
+
+func TestVerifyClientEndpointWrongAddress(t *testing.T) {
+	apiEndpoints = map[string]apiEndpoint{
+		"verifyKey": apiEndpoint{
+			path:           ".../",
+			method:         "POST",
+			apiKeyRequired: false,
+		},
+	}
+
+	client := NewClient("test_api_key", "test_site")
+	err := client.VeryfiClient()
+	assert.Error(t, err)
+
+}
+
+func TestVerifyClientWrongEndpoint(t *testing.T) {
+	apiEndpoints = map[string]apiEndpoint{}
+	client := NewClient("test_api_key", "test_site")
+	err := client.VeryfiClient()
 	assert.Error(t, err)
 }

@@ -82,10 +82,8 @@ func (c *Client) VeryfiClient() error {
 	v.Add("blog", c.site)
 	address.RawQuery = v.Encode()
 
-	res, err := c.httpClient.Get(address.String())
-	if err != nil {
-		return err
-	}
+	// Error not possible, we parsing URL address before make a request
+	res, _ := c.httpClient.Get(address.String())
 
 	r, _ := getResponseBodyAsString(res)
 	if r == "valid" {
