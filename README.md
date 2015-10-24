@@ -111,3 +111,11 @@ $ go test ./...
 ## License
 
 [GNU v2](./LICENSE)
+
+## Support
+
+Issues for this project should be reported on GitHub issues
+
+Staff responsible for project:
+
+* [Sebastian Czoch <sebastian@czoch.eu>](sebastian@czoch.eu)
